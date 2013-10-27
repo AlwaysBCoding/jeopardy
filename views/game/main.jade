@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  div.join-game
+    form.join-game-form
+      label.username-label Username
+        input.username
+      input(type="submit", value="Join Game")
+
+  div.game-information.hidden
+    ul.player-list
+
+  :coffeescript
+    socket = io.connect(window.location.hostname)
+
+    $(".join-game-form").on "submit", (e) ->
+      e.preventDefault()
+
+      $join_game = $(".join-game")
+      $game_information = $(".game-information")
+      $username = $join_game.find(".username")
+      username = $username.val()
+
+      socket.emit "new player", {username: username}
+      $join_game.hide()
+      $game_information.removeClass "hidden"
+
+    socket.on "update player list", (players) ->
+      $player_list = $(".player-list")
+      $player_list.empty()
+      htmlString = ""
+
+      _.each players, (player) ->
+        htmlString += "<li>#{player.username}</li>"
+
+      $player_list.html(htmlString)
