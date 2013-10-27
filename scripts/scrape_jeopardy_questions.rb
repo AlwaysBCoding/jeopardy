@@ -6,14 +6,14 @@
 # Clue
   # question
   # answer
-  # amount
+  # value
 
 require "nokogiri"
 require "open-uri"
 require "date"
 require "active_support/all"
 
-ids = 1..5
+ids = 1...10
 
 ids.each do |id|
 
@@ -30,13 +30,65 @@ ids.each do |id|
   single_jeopardy_categories = single_jeopardy.css("td.category")
   single_jeopardy_categories.each do |single_jeopardy_category|
     category_name = single_jeopardy_category.at_css("td.category_name").text
-    # Category.create(name: category_name, game_date: game_date, round: "single")
+    # category = Category.create(name: category_name, game_date: game_date, round: "single")
   end
+
+  single_jeopardy_clues = single_jeopardy.css("td.clue")
+  single_jeopardy_clues.each_with_index do |single_jeopardy_clue, index|
+    question = single_jeopardy_clue.at_css(".clue_text").present? ? single_jeopardy_clue.at_css(".clue_text").text : nil;
+
+    clue_value = nil
+    case index
+    when 0..5 then clue_value = 200
+    when 6..11 then clue_value = 400
+    when 12..17 then clue_value = 600
+    when 18..23 then clue_value = 800
+    when 24..29 then clue_value = 1000
+    end
+
+    answer = single_jeopardy_clue.at_css("div[onmouseover]").present? ? single_jeopardy_clue.at_css("div[onmouseover]")["onmouseover"].match(/">.*<\/em>/).to_s.gsub(/^">/, "").gsub(/<\/em>|<i>|<\/i>/, "") : nil;
+    puts "#{clue_value}: #{question} :: #{answer}"
+    # clue = Clue.new
+    # clue.question = question
+    # clue.answer = answer
+    # clue.value = clue_value
+    # clue.save
+
+  end
+
+  puts "============================="
 
   double_jeopardy_categories = double_jeopardy.css("td.category")
   double_jeopardy_categories.each do |double_jeopardy_category|
     category_name = double_jeopardy_category.at_css("td.category_name").text
-    # Category.create(name: category_name, game_date: game_date, round: "double")
+    # category = Category.create(name: category_name, game_date: game_date, round: "double")
   end
+
+  double_jeopardy_clues = double_jeopardy.css("td.clue")
+  double_jeopardy_clues.each_with_index do |double_jeopardy_clue, index|
+    question = double_jeopardy_clue.at_css(".clue_text").present? ? double_jeopardy_clue.at_css(".clue_text").text : nil;
+
+    clue_value = nil
+    case index
+    when 0..5 then clue_value = 400
+    when 6..11 then clue_value = 800
+    when 12..17 then clue_value = 1200
+    when 18..23 then clue_value = 1600
+    when 24..29 then clue_value = 2000
+    end
+
+    answer = double_jeopardy_clue.at_css("div[onmouseover]").present? ? double_jeopardy_clue.at_css("div[onmouseover]")["onmouseover"].match(/">.*<\/em>/).to_s.gsub(/^">/, "").gsub(/<\/em>|<i>|<\/i>/, "") : nil;
+    puts "#{clue_value}: #{question} :: #{answer}"
+    # clue = Clue.new
+    # clue.question = question
+    # clue.answer = answer
+    # clue.value = clue_value
+    # clue.save
+
+  end
+
+  puts "============================="
+  puts "*****************************"
+  puts "============================="
 
 end
