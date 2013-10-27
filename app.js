@@ -55,12 +55,42 @@ app.get('/users', user.list);
 // VARIABLES
 var activePlayers = [];
 
+// LOCAL FUNCTIONS
+var addPlayer = function(player, id) {
+  var newPlayer = {
+    username: player.username,
+    id: id
+  };
+  activePlayers.push(newPlayer);
+  return newPlayer;
+}
+
+var removePlayer = function(id) {
+  var index = 0;
+  _.each(activePlayers, function(player) {
+    if(id === player.id) {
+      activePlayers.splice(index, 1);
+      return;
+    } else {
+      index++;
+    };
+  });
+}
+
+var updatePlayers = function() {
+  io.sockets.emit("update player list", activePlayers);
+};
+
 // SOCKET IO EVENT HANDLERS
 io.sockets.on("connection", function(socket) {
   socket.on("new player", function(player) {
-    activePlayers.push(player);
-    console.log("Added player: " + player.username);
+    var player = addPlayer(player, socket.id);
+    console.log("Added player: " + player.id);
+    updatePlayers();
+  });
 
-    io.sockets.emit("update player list", activePlayers);
+  socket.on("disconnect", function() {
+    removePlayer(socket.id);
+    updatePlayers();
   });
 });
