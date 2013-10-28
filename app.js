@@ -9,7 +9,6 @@ var app     = express();
 
 // routes
 var routes = require('./routes');
-var user   = require('./routes/user');
 var game   = require("./routes/game");
 
 // variables
@@ -56,7 +55,7 @@ server.listen(port, function() {
 
 // ROUTES
 app.get('/', game.main);
-app.get('/users', user.list);
+app.get("/game/:id", game.show);
 
 // VARIABLES
 var activePlayers = [];
@@ -113,21 +112,20 @@ var generate_game_board = function(id) {
 
     query2.on("end", function() {
       _.each(activeGames, function(game) {
-        if (game.board == id) {
+        if (game.id == id) {
           game.board = board;
           updateGames();
         };
       });
     });
   });
-
 }
 
 var addGame = function(game, id) {
   var newGame = {
+    id: id,
     game_name: game.game_name,
-    players: [id],
-    board: id
+    players: [id]
   };
   generate_game_board(id);
   activeGames.push(newGame);
@@ -139,6 +137,7 @@ var removeGame = function() {
 }
 
 var updateGames = function() {
+  process.env.activeGames = JSON.stringify(activeGames);
   io.sockets.emit("update games list", activeGames);
 }
 

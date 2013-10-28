@@ -1,0 +1,46 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  table.game-board.hidden
+    tr.categories
+
+  div.game-data
+    p= game
+
+  :coffeescript
+    socket = io.connect(window.location.hostname)
+
+    socket.on "some event", ->
+    # CREATE JEOPARDY BOARD
+      $categories = $("tr.categories")
+      categories = JSON.parse($(".json-dump p").text())
+      clues = []
+      $game_board = $(".game-board")
+
+      _.each categories, (category) ->
+        $categories.append("<td class='category-name'>#{category.name} (#{category.date_part})</td>")
+        temp_clue_array = []
+        _.each category.clues, (clue) ->
+          temp_clue_array.push clue
+        clues.push temp_clue_array
+
+      clues = _.zip(clues[0], clues[1], clues[2], clues[3], clues[4], clues[5])
+      _.each clues, (row, index) ->
+        $game_board.append("<tr class='row#{index+1}'></tr>")
+        _.each row, (clue) ->
+          $("tr.row#{index+1}").append("<td class='clue' data-state='value'><p><span class='value'>#{clue.value}</span><span class='question'>#{clue.question}</span><span class='answer'>#{clue.answer}</span></td>")
+
+    # CONFIGURE INTERACTION WITH JEOPARDY BOARD
+      $("td.clue").on "click", (e) ->
+        switch $(this).attr("data-state")
+          when "value"
+            $(this).find(".value").hide()
+            $(this).find(".question").show()
+            $(this).attr("data-state", "question")
+          when "question"
+            $(this).find(".question").hide()
+            $(this).find(".answer").show()
+            $(this).attr("data-state", "answer")
