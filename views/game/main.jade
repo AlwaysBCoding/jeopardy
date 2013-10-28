@@ -14,7 +14,8 @@ block content
     ul.player-list
 
   div.count
-    p Count: #{count}
+    p Result: #{JSON.stringify(result)}
+    p Ids: #{JSON.stringify(ids)}
 
   :coffeescript
     socket = io.connect(window.location.hostname)
