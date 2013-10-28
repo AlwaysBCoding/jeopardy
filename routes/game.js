@@ -1,4 +1,5 @@
 exports.main = function(request, response) {
+  // Initialize Variables
   var _  = require("underscore")._;
   var pg = require("pg");
   var connectionString = process.env.DATABASE_URL || "postgres://localhost:5432/jeopardy_development";

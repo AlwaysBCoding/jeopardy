@@ -57,6 +57,7 @@ app.get('/users', user.list);
 
 // VARIABLES
 var activePlayers = [];
+var activeGames = [];
 
 // LOCAL FUNCTIONS
 var addPlayer = function(player, id) {
@@ -84,12 +85,33 @@ var updatePlayers = function() {
   io.sockets.emit("update player list", activePlayers);
 };
 
+var addGame = function(game, id) {
+  var newGame = {
+    game_name: game.game_name,
+    players: [id]
+  };
+  activeGames.push(newGame);
+  return newGame;
+}
+
+var removeGame = function() {
+
+}
+
+var updateGames = function() {
+  io.sockets.emit("update games list", activeGames);
+}
+
 // SOCKET IO EVENT HANDLERS
 io.sockets.on("connection", function(socket) {
   socket.on("new player", function(player) {
     var player = addPlayer(player, socket.id);
-    console.log("Added player: " + player.id);
     updatePlayers();
+  });
+
+  socket.on("new game", function(game) {
+    var game = addGame(game, socket.id);
+    updateGames();
   });
 
   socket.on("disconnect", function() {

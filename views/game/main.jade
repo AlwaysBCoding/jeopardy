@@ -4,16 +4,23 @@ block content
   h1= title
   p Welcome to #{title}
 
-  div.join-game
-    form.join-game-form
+  div.create-user
+    form.create-user-form
       label.username-label Username
         input.username
-      input(type="submit", value="Join Game")
+      input(type="submit", value="Create User")
 
   div.game-information.hidden
     ul.player-list
 
-  table.game-board
+  div.games-list-container.hidden
+    ul.games-list
+    form.new-game-form
+      label.game-name-label Game name
+        input.game-name
+      input(type="submit", value="Create Game")
+
+  table.game-board.hidden
     tr.categories
 
   div.json-dump.hidden
@@ -32,18 +39,38 @@ block content
 
       $player_list.html(htmlString)
 
+    socket.on "update games list", (games) ->
+      $games_list = $(".games-list")
+      $games_list.empty()
+      htmlString = ""
+
+      _.each games, (game) ->
+        htmlString += "<li>#{game.game_name}</li>"
+
+      $games_list.html(htmlString)
+
     $ ->
-      $(".join-game-form").on "submit", (e) ->
+      $(".create-user-form").on "submit", (e) ->
         e.preventDefault()
 
-        $join_game = $(".join-game")
+        $create_user = $(".create-user")
         $game_information = $(".game-information")
-        $username = $join_game.find(".username")
+        $games_list_container = $(".games-list-container")
+        $username = $create_user.find(".username")
         username = $username.val()
 
         socket.emit "new player", {username: username}
-        $join_game.hide()
+        $create_user.hide()
         $game_information.removeClass "hidden"
+        $games_list_container.removeClass "hidden"
+
+      $(".new-game-form").on "submit", (e) ->
+        e.preventDefault()
+
+        $new_game = $(".new-game-form")
+        $game_name = $new_game.find(".game-name")
+        game_name = $game_name.val()
+        socket.emit "new game", {game_name: game_name}
 
     # LOGIC TO CREATE THE JEOPARDY BOARD
       $categories = $("tr.categories")
