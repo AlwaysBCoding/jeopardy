@@ -16,3 +16,15 @@ td.category-name {
   padding-left: 5px;
   border-right: 2px solid black;
 }
+
+td.clue {
+  cursor: pointer;
+}
+
+span.question {
+  display: none;
+}
+
+span.answer {
+  display: none;
+}

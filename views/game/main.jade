@@ -45,13 +45,14 @@ block content
         $join_game.hide()
         $game_information.removeClass "hidden"
 
+    # LOGIC TO CREATE THE JEOPARDY BOARD
       $categories = $("tr.categories")
       categories = JSON.parse($(".json-dump p").text())
       clues = []
       $game_board = $(".game-board")
 
       _.each categories, (category) ->
-        $categories.append("<td class='category-name'>#{category.name}</td>")
+        $categories.append("<td class='category-name'>#{category.name} (#{category.date_part})</td>")
         temp_clue_array = []
         _.each category.clues, (clue) ->
           temp_clue_array.push clue
@@ -61,4 +62,16 @@ block content
       _.each clues, (row, index) ->
         $game_board.append("<tr class='row#{index+1}'></tr>")
         _.each row, (clue) ->
-          $("tr.row#{index+1}").append("<td class='clue'>#{clue.value}</td>")
+          $("tr.row#{index+1}").append("<td class='clue' data-state='value'><p><span class='value'>#{clue.value}</span><span class='question'>#{clue.question}</span><span class='answer'>#{clue.answer}</span></td>")
+
+    # LOGIC TO INTERACT WITH THE JEOPARDY BOARD
+      $("td.clue").on "click", (e) ->
+        switch $(this).attr("data-state")
+          when "value"
+            $(this).find(".value").hide()
+            $(this).find(".question").show()
+            $(this).attr("data-state", "question")
+          when "question"
+            $(this).find(".question").hide()
+            $(this).find(".answer").show()
+            $(this).attr("data-state", "answer")
