@@ -13,9 +13,10 @@ block content
   div.game-information.hidden
     ul.player-list
 
-  div.categories
+  table.game-board
+    tr.categories
 
-  div.json-dump
+  div.json-dump.hidden
     p= JSON.stringify(result.categories)
 
   :coffeescript
@@ -44,11 +45,20 @@ block content
         $join_game.hide()
         $game_information.removeClass "hidden"
 
-      $categories = $(".categories")
+      $categories = $("tr.categories")
       categories = JSON.parse($(".json-dump p").text())
+      clues = []
+      $game_board = $(".game-board")
 
       _.each categories, (category) ->
-        $categories.append("<p>#{category.name}</p><ul>")
+        $categories.append("<td class='category-name'>#{category.name}</td>")
+        temp_clue_array = []
         _.each category.clues, (clue) ->
-          $categories.append("<li>#{clue.value}</li>")
-        $categories.append("</ul>")
+          temp_clue_array.push clue
+        clues.push temp_clue_array
+
+      clues = _.zip(clues[0], clues[1], clues[2], clues[3], clues[4], clues[5])
+      _.each clues, (row, index) ->
+        $game_board.append("<tr class='row#{index+1}'></tr>")
+        _.each row, (clue) ->
+          $("tr.row#{index+1}").append("<td class='clue'>#{clue.value}</td>")
