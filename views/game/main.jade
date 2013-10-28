@@ -13,24 +13,13 @@ block content
   div.game-information.hidden
     ul.player-list
 
-  div.count
-    p Result: #{JSON.stringify(result)}
-    p Ids: #{JSON.stringify(ids)}
+  div.categories
+
+  div.json-dump
+    p= JSON.stringify(result.categories)
 
   :coffeescript
     socket = io.connect(window.location.hostname)
-
-    $(".join-game-form").on "submit", (e) ->
-      e.preventDefault()
-
-      $join_game = $(".join-game")
-      $game_information = $(".game-information")
-      $username = $join_game.find(".username")
-      username = $username.val()
-
-      socket.emit "new player", {username: username}
-      $join_game.hide()
-      $game_information.removeClass "hidden"
 
     socket.on "update player list", (players) ->
       $player_list = $(".player-list")
@@ -41,3 +30,22 @@ block content
         htmlString += "<li>#{player.username}</li>"
 
       $player_list.html(htmlString)
+
+    $ ->
+      $(".join-game-form").on "submit", (e) ->
+        e.preventDefault()
+
+        $join_game = $(".join-game")
+        $game_information = $(".game-information")
+        $username = $join_game.find(".username")
+        username = $username.val()
+
+        socket.emit "new player", {username: username}
+        $join_game.hide()
+        $game_information.removeClass "hidden"
+
+      $categories = $(".categories")
+      categories = JSON.parse($(".json-dump p").text())
+
+      _.each categories, (category) ->
+        $categories.append("<p>#{category.name}</p>")
