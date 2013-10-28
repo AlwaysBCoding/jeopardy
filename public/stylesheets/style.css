@@ -11,20 +11,45 @@ a {
   display: none;
 }
 
+td {
+  background-color: #0000AF;
+  border-width: 2px;
+  border-style: outset;
+  border-bottom-color: #000088;
+  border-left-color: #0000EE;
+  border-right-color: #000099;
+  border-top-color: #0000FF;
+  width: 152px;
+}
+
 td.category-name {
-  padding-right: 5px;
-  padding-left: 5px;
-  border-right: 2px solid black;
+  width: 152px;
+  font-size: 125%;
+  color: #FFFFFF;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
 }
 
 td.clue {
   cursor: pointer;
+  text-align: center;
+}
+
+span.value {
+  width: 100%;
+  color: #FFFF00;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
 }
 
 span.question {
+  color: #FFFFFF;
   display: none;
 }
 
 span.answer {
+  color: #00FFFF;
   display: none;
 }

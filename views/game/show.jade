@@ -32,7 +32,7 @@ block content
       _.each clues, (row, index) ->
         $game_board.append("<tr class='row#{index+1}'></tr>")
         _.each row, (clue) ->
-          $("tr.row#{index+1}").append("<td class='clue' data-state='value'><p><span class='value'>#{clue.value}</span><span class='question'>#{clue.question}</span><span class='answer'>#{clue.answer}</span></td>")
+          $("tr.row#{index+1}").append("<td class='clue' data-state='value'><p><span class='value'>$#{clue.value}</span><span class='question'>#{clue.question}</span><span class='answer'>#{clue.answer}</span></td>")
 
     # CONFIGURE INTERACTION WITH JEOPARDY BOARD
       $("td.clue").on "click", (e) ->
