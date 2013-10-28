@@ -13,7 +13,7 @@ exports.main = function(request, response) {
     return "(" + array.toString() + ")"
   }
 
-  query1 = client.query("SELECT ct.id, ct.name, EXTRACT(YEAR FROM ct.game_date)  FROM categories ct ORDER BY RANDOM() LIMIT 6", function(error, result) {
+  query1 = client.query("SELECT ct.id, ct.name, EXTRACT(YEAR FROM ct.game_date) FROM categories ct ORDER BY RANDOM() LIMIT 6", function(error, result) {
     _.each(result.rows, function(row, index) {
       data["categories"][row.id] = row;
       data["categories"][row.id]["clues"] = [];

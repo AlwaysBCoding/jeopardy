@@ -46,6 +46,7 @@ block content
 
       _.each games, (game) ->
         htmlString += "<li>#{game.game_name}</li>"
+        console.log game;
 
       $games_list.html(htmlString)
 

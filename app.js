@@ -44,6 +44,9 @@ if ('development' == app.get('env')) {
 // });
 
 // POSTGRES INFORMATION
+var connectionString = process.env.DATABASE_URL || "postgres://localhost:5432/jeopardy_development";
+var client = new pg.Client(connectionString);
+client.connect();
 
 // START SERVER
 var port = process.env.port || 4682
@@ -59,7 +62,12 @@ app.get('/users', user.list);
 var activePlayers = [];
 var activeGames = [];
 
-// LOCAL FUNCTIONS
+// HELPER FUNCTIONS
+var arrayAsSet = function(array) {
+  return "(" + array.toString() + ")";
+}
+
+// PLAYER LOGIC
 var addPlayer = function(player, id) {
   var newPlayer = {
     username: player.username,
@@ -85,11 +93,43 @@ var updatePlayers = function() {
   io.sockets.emit("update player list", activePlayers);
 };
 
+// GAME LOGIC
+var generate_game_board = function(id) {
+  var board = { "categories": {} };
+  var category_ids = [];
+
+  query1 = client.query("SELECT ct.id, ct.name, EXTRACT(YEAR FROM ct.game_date) FROM categories ct ORDER BY RANDOM() LIMIT 6", function(error, result) {
+    _.each(result.rows, function(row, index) {
+      board["categories"][row.id] = row;
+      board["categories"][row.id]["clues"] = [];
+    });
+    category_ids = _.map(board["categories"], function(x) { return x.id });
+
+    query2 = client.query("SELECT c.question, c.answer, c.value, c.category_id FROM clues c WHERE c.category_id IN " + arrayAsSet(category_ids), function(error, result) {
+      _.each(result.rows, function(row, index) {
+        board["categories"][row.category_id]["clues"].push(row);
+      });
+    });
+
+    query2.on("end", function() {
+      _.each(activeGames, function(game) {
+        if (game.board == id) {
+          game.board = board;
+          updateGames();
+        };
+      });
+    });
+  });
+
+}
+
 var addGame = function(game, id) {
   var newGame = {
     game_name: game.game_name,
-    players: [id]
+    players: [id],
+    board: id
   };
+  generate_game_board(id);
   activeGames.push(newGame);
   return newGame;
 }
@@ -111,7 +151,6 @@ io.sockets.on("connection", function(socket) {
 
   socket.on("new game", function(game) {
     var game = addGame(game, socket.id);
-    updateGames();
   });
 
   socket.on("disconnect", function() {
