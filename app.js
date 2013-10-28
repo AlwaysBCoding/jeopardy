@@ -18,6 +18,7 @@ var path   = require('path');
 var server = http.createServer(app);
 var io     = require("socket.io").listen(server);
 var _      = require("underscore")._;
+var pg     = require("pg");
 
 
 // all environments
@@ -41,6 +42,8 @@ if ('development' == app.get('env')) {
 //   io.set("transports", ["xhr-polling"]);
 //   io.set("polling duration", 10);
 // });
+
+// POSTGRES INFORMATION
 
 // START SERVER
 var port = process.env.port || 4682

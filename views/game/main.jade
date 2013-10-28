@@ -13,6 +13,9 @@ block content
   div.game-information.hidden
     ul.player-list
 
+  div.count
+    p Count: #{count}
+
   :coffeescript
     socket = io.connect(window.location.hostname)
 
