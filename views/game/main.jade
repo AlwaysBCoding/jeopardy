@@ -48,4 +48,7 @@ block content
       categories = JSON.parse($(".json-dump p").text())
 
       _.each categories, (category) ->
-        $categories.append("<p>#{category.name}</p>")
+        $categories.append("<p>#{category.name}</p><ul>")
+        _.each category.clues, (clue) ->
+          $categories.append("<li>#{clue.value}</li>")
+        $categories.append("</ul>")
