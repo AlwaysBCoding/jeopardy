@@ -4,19 +4,20 @@ block content
   h1= title
   p Welcome to #{title}
 
-  table.game-board.hidden
+  table.game-board
     tr.categories
 
-  div.game-data
+  div.json-game-data.hidden
     p= game
 
   :coffeescript
     socket = io.connect(window.location.hostname)
 
-    socket.on "some event", ->
+    $ ->
     # CREATE JEOPARDY BOARD
       $categories = $("tr.categories")
-      categories = JSON.parse($(".json-dump p").text())
+      game_data = JSON.parse($(".json-game-data p").text())
+      categories = game_data.board.categories
       clues = []
       $game_board = $(".game-board")
 
